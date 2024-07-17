@@ -6,8 +6,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from numpy.typing import NDArray
+from pipeline.age import Age
 from sklearn.model_selection import cross_val_score
-from sklearn.preprocessing import LabelEncoder
 
 
 class Baseline:
@@ -27,6 +27,9 @@ class Baseline:
         """
         # モデルの作成
         model = lgb.LGBMClassifier(verbose=-1)
+
+        age = Age(self.__X)
+        self.__X = age.discretization()
 
         # 交差検証の実行
         scores = cross_val_score(
