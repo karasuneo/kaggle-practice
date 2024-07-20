@@ -6,8 +6,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from sklearn.feature_selection import SelectKBest
-from sklearn.model_selection import (GridSearchCV, cross_val_score,
-                                     cross_validate)
+from sklearn.model_selection import (GridSearchCV, StratifiedKFold,
+                                     cross_val_score, cross_validate)
 from sklearn.pipeline import make_pipeline
 
 
@@ -21,6 +21,7 @@ class Baseline:
             "max_depth": 10,
             "n_estimators": 100,
             "num_leaves": 31,
+            "verbose": -1,
         }
         self.__df_train = pd.read_csv(train_file_path)
         self.__X = self.__get_explanatory_variable(df=self.__df_train)
@@ -28,13 +29,18 @@ class Baseline:
         self.__id = self.__df_train["id"]
         self.__model = lgb.LGBMClassifier(**params)
 
-    def run(self, n_split: int = 5) -> Tuple[pd.DataFrame, float]:
+    def run(self, n_split: int = 5, random_state=44) -> Tuple[pd.DataFrame, float]:
         """
         ## モデルの作成及び評価・特徴量の重要度を取得
         """
+        skf = StratifiedKFold(n_splits=n_split, shuffle=True, random_state=random_state)
         # 交差検証の実行
         scores = cross_val_score(
-            self.__model, self.__X, self.__y, cv=n_split, scoring="accuracy"
+            self.__model,
+            self.__X,
+            self.__y,
+            cv=skf,
+            scoring="accuracy",
         )
 
         self.__model.fit(self.__X, self.__y)
@@ -62,7 +68,7 @@ class Baseline:
             "n_estimators": [100, 200, 300],
         }
 
-        grid_search = GridSearchCV(model, param_grid, cv=5, scoring="accuracy")
+        grid_search = GridSearchCV(model, param_grid, cv=n_split, scoring="accuracy")
         grid_search.fit(self.__X, self.__y)
 
         best_model = grid_search.best_estimator_
@@ -99,6 +105,9 @@ class Baseline:
 
         df_submit.to_csv(submit_file_path, index=False, header=False)
 
+    def get_X(self) -> pd.DataFrame:
+        return self.__X
+
     def __get_feature_importance(self) -> pd.DataFrame:
         """
         ## 特徴量の重要度を取得
@@ -121,14 +130,30 @@ class Baseline:
 
         X = df[
             [
-                "RelationshipSatisfaction",
-                "YearsInCurrentRole",
+                "Age",
+                "DailyRate",
+                "DistanceFromHome",
+                "HourlyRate",
+                "MonthlyIncome",
                 "NumCompaniesWorked",
-                "OverTime",
-                "BusinessTravel_Non-Travel",
-                # "YearsWithCurrManager",  # add
+                "PercentSalaryHike",
+                "PerformanceRating",
+                "StandardHours",
+                "TotalWorkingYears",
+                "TrainingTimesLastYear",
+                "YearsAtCompany",
+                "YearsInCurrentRole",
+                "YearsSinceLastPromotion",
+                "YearsWithCurrManager",
+                # "RelationshipSatisfaction",
+                # "YearsInCurrentRole",
+                # "NumCompaniesWorked",
+                # "OverTime",
+                # "JobLevel",
+                # "BusinessTravel_Non-Travel",
+                # "YearsWithCurrManager",
                 # "Age",
-                # "YearAtCompany",
+                # "YearsAtCompany",
             ]
         ]
 
