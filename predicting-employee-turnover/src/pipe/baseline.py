@@ -6,8 +6,12 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from sklearn.feature_selection import SelectKBest
-from sklearn.model_selection import (GridSearchCV, StratifiedKFold,
-                                     cross_val_score, cross_validate)
+from sklearn.model_selection import (
+    GridSearchCV,
+    StratifiedKFold,
+    cross_val_score,
+    cross_validate,
+)
 from sklearn.pipeline import make_pipeline
 
 
