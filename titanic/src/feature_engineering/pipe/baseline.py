@@ -6,7 +6,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from lightgbm import LGBMClassifier, LGBMRegressor
-from sklearn.model_selection import GridSearchCV, StratifiedKFold, cross_val_score
+from sklearn.model_selection import (GridSearchCV, StratifiedKFold,
+                                     cross_val_score)
 
 
 class Baseline:
@@ -90,7 +91,7 @@ class Baseline:
         """
         df_test = pd.read_csv(test_file_path)
 
-        # df_test["Sex", "Age", "TItle"] = 
+        # df_test["Sex", "Age", "TItle"] =
         df_test = self.__age_model_predict(
             df=df_test, age_model=self.__age_model_fit(self.__df_train)
         )
@@ -110,7 +111,7 @@ class Baseline:
 
     def get_X(self) -> pd.DataFrame:
         return self.__X
-    
+
     def get_model(self) -> LGBMClassifier:
         return self.__model
 
